@@ -1,0 +1,121 @@
+{
+  "messages": [
+    {
+      "content": "URGENT: Your account will be suspended in 24 hours. Click here to verify: http://suspicious-bank.tk/verify",
+      "sender": "security@fake-bank.com",
+      "subject": "Account Suspension Warning",
+      "channel": "email"
+    },
+    {
+      "content": "Congratulations! You've won $1,000,000! Click to claim: http://winner123.ml/claim",
+      "sender": "lottery@scam.com",
+      "subject": "YOU WON!!!",
+      "channel": "email"
+    },
+    {
+      "content": "Your PayPal account has been limited. Verify now: http://paypal-security.tk/login",
+      "sender": "security@paypal-fake.com",
+      "subject": "Account Limited",
+      "channel": "email"
+    },
+    {
+      "content": "Click this link now to update your information: http://192.168.1.100/update",
+      "sender_number": "+12345",
+      "channel": "sms"
+    },
+    {
+      "content": "Hi, this is a normal message from your friend. How are you doing today?",
+      "sender": "friend@gmail.com",
+      "subject": "How are you?",
+      "channel": "email"
+    },
+    {
+      "content": "Meeting scheduled for tomorrow at 2 PM in conference room A.",
+      "sender": "hr@company.com",
+      "subject": "Meeting Reminder",
+      "channel": "email"
+    },
+    {
+      "content": "Your order #12345 has been shipped. Track here: https://fedex.com/tracking/12345",
+      "sender": "shipping@amazon.com",
+      "subject": "Order Shipped",
+      "channel": "email"
+    },
+    {
+      "content": "Free iPhone! Limited time offer! Click now: http://free-iphone.click/get",
+      "sender_number": "+54321",
+      "channel": "sms"
+    },
+    {
+      "content": "FINAL NOTICE: Pay your tax debt immediately or face legal action. Click: http://irs-payment.ga/pay",
+      "sender": "irs@fake-tax.com",
+      "subject": "FINAL NOTICE - Tax Debt",
+      "channel": "email"
+    },
+    {
+      "content": "Please review the attached document for the quarterly report.",
+      "sender": "manager@company.com",
+      "subject": "Q4 Report Review",
+      "channel": "email",
+      "has_attachments": true
+    },
+    {
+      "content": "Your credit card ending in 1234 was charged $500. If this wasn't you, click here: http://fake-bank.ml/dispute",
+      "sender_number": "+99999",
+      "channel": "sms"
+    },
+    {
+      "content": "Thank you for your purchase. Your receipt is attached.",
+      "sender": "receipts@store.com",
+      "subject": "Purchase Receipt",
+      "channel": "email"
+    },
+    {
+      "content": "WARNING: Suspicious activity detected on your account. Login immediately: http://account-security.tk/login",
+      "sender": "alerts@fake-service.com",
+      "subject": "SECURITY ALERT",
+      "channel": "email"
+    },
+    {
+      "content": "Your package delivery failed. Reschedule here: http://delivery-update.ga/reschedule",
+      "sender_number": "+11111",
+      "channel": "sms"
+    },
+    {
+      "content": "Weekly team standup is moved to Thursday 10 AM.",
+      "sender": "team-lead@company.com",
+      "subject": "Standup Reschedule",
+      "channel": "email"
+    },
+    {
+      "content": "Act now! Your social security benefits will be terminated unless you call 1-800-SCAM-NOW",
+      "sender_number": "+66666",
+      "channel": "sms"
+    },
+    {
+      "content": "Happy birthday! Hope you have a wonderful day!",
+      "sender": "family@gmail.com",
+      "subject": "Happy Birthday!",
+      "channel": "email"
+    },
+    {
+      "content": "Update your Microsoft account password here: http://microsoft-update.ml/password",
+      "sender": "security@microsoft-fake.com",
+      "subject": "Password Update Required",
+      "channel": "email"
+    },
+    {
+      "content": "Your appointment is confirmed for tomorrow at 3 PM.",
+      "sender": "clinic@healthcare.com",
+      "subject": "Appointment Confirmation",
+      "channel": "email"
+    },
+    {
+      "content": "URGENT: Your Bitcoin wallet will be deleted. Backup now: http://bitcoin-backup.tk/save",
+      "sender": "wallet@fake-crypto.com",
+      "subject": "Wallet Deletion Warning",
+      "channel": "email"
+    }
+  ],
+  "labels": [1, 1, 1, 1, 0, 0, 0, 1, 1, 0, 1, 0, 1, 1, 0, 1, 0, 1, 0, 1]
+}

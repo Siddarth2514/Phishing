@@ -1,0 +1,44 @@
+{
+  "detection_threshold": 0.5,
+  "alert_recipients": [
+    "security@company.com",
+    "admin@company.com"
+  ],
+  "notification_methods": ["email", "webhook"],
+  
+  "channels": {
+    "email": {
+      "server": "imap.gmail.com",
+      "port": 993,
+      "username": "your_email@gmail.com",
+      "password": "your_app_password"
+    },
+    "sms": {
+      "account_sid": "your_twilio_account_sid",
+      "auth_token": "your_twilio_auth_token",
+      "phone_number": "+1234567890"
+    },
+    "telegram": {
+      "bot_token": "your_telegram_bot_token"
+    }
+  },
+  
+  "alerts": {
+    "email": {
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "alerts@company.com",
+      "password": "your_email_password",
+      "from_email": "security-alerts@company.com"
+    },
+    "sms": {
+      "account_sid": "your_twilio_account_sid",
+      "auth_token": "your_twilio_auth_token",
+      "phone_number": "+1234567890"
+    },
+    "webhook": {
+      "url": "https://your-webhook-endpoint.com/alerts",
+      "secret": "your_webhook_secret"
+    }
+  }
+}

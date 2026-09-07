@@ -1,0 +1,283 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - AI Phishing Detection{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-gear"></i> System Configuration
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="settingsForm">
+                    <!-- Detection Settings -->
+                    <h6 class="mb-3">Detection Settings</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="detectionThreshold" class="form-label">Detection Threshold</label>
+                            <input type="number" class="form-control" id="detectionThreshold" 
+                                   min="0" max="1" step="0.1" value="0.5">
+                            <small class="text-muted">Confidence threshold for phishing detection (0.0 - 1.0)</small>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="alertMethods" class="form-label">Alert Methods</label>
+                            <select class="form-select" id="alertMethods" multiple>
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                                <option value="webhook">Webhook</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Alert Recipients -->
+                    <h6 class="mb-3">Alert Recipients</h6>
+                    <div class="mb-3">
+                        <label for="alertRecipients" class="form-label">Email Recipients</label>
+                        <textarea class="form-control" id="alertRecipients" rows="3"
+                                  placeholder="admin@company.com&#10;security@company.com"></textarea>
+                        <small class="text-muted">One email address per line</small>
+                    </div>
+
+                    <!-- Email Configuration -->
+                    <h6 class="mb-3">Email Settings</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="emailServer" class="form-label">SMTP Server</label>
+                            <input type="text" class="form-control" id="emailServer" 
+                                   placeholder="smtp.gmail.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="emailPort" class="form-label">SMTP Port</label>
+                            <input type="number" class="form-control" id="emailPort" 
+                                   placeholder="587">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="emailUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="emailUsername" 
+                                   placeholder="alerts@company.com">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="emailPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="emailPassword" 
+                                   placeholder="Enter password">
+                        </div>
+                    </div>
+
+                    <!-- Webhook Configuration -->
+                    <h6 class="mb-3">Webhook Settings</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label for="webhookUrl" class="form-label">Webhook URL</label>
+                            <input type="url" class="form-control" id="webhookUrl" 
+                                   placeholder="https://your-webhook-endpoint.com/alerts">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="webhookSecret" class="form-label">Secret Key</label>
+                            <input type="password" class="form-control" id="webhookSecret" 
+                                   placeholder="webhook_secret">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Save Settings
+                        </button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="loadSettings()">
+                            <i class="bi bi-arrow-clockwise"></i> Reset
+                        </button>
+                        <button type="button" class="btn btn-info ms-2" onclick="testConnection()">
+                            <i class="bi bi-wifi"></i> Test Connection
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- System Information -->
+        <div class="card mb-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-info-circle"></i> System Information
+                </h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td>System Mode:</td>
+                        <td>
+                            {% if use_full_system %}
+                                <span class="badge bg-success">Full System</span>
+                            {% else %}
+                                <span class="badge bg-warning">Simple Mode</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Version:</td>
+                        <td>v1.0.0</td>
+                    </tr>
+                    <tr>
+                        <td>Components:</td>
+                        <td>
+                            <small>
+                                ML Model, NLP Engine,<br>
+                                Alert System, Web Interface
+                            </small>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Configuration Tips -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-lightbulb"></i> Configuration Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled small">
+                    <li><i class="bi bi-check-circle text-success"></i> Use app passwords for Gmail</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Test webhook endpoints before saving</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Lower threshold = more sensitive detection</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Multiple alert methods recommended</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Load current settings on page load
+document.addEventListener('DOMContentLoaded', loadSettings);
+
+async function loadSettings() {
+    try {
+        const response = await fetch('/api/settings');
+        const data = await response.json();
+        
+        if (data.success) {
+            const config = data.config;
+            
+            // Detection settings
+            document.getElementById('detectionThreshold').value = 
+                config.detection_threshold || 0.5;
+            
+            // Alert methods
+            const alertMethods = config.notification_methods || [];
+            const methodSelect = document.getElementById('alertMethods');
+            Array.from(methodSelect.options).forEach(option => {
+                option.selected = alertMethods.includes(option.value);
+            });
+            
+            // Alert recipients
+            const recipients = config.alert_recipients || [];
+            document.getElementById('alertRecipients').value = recipients.join('\n');
+            
+            // Email settings
+            const emailConfig = config.alerts?.email || {};
+            document.getElementById('emailServer').value = emailConfig.smtp_server || '';
+            document.getElementById('emailPort').value = emailConfig.smtp_port || '';
+            document.getElementById('emailUsername').value = emailConfig.username || '';
+            // Don't load password for security
+            
+            // Webhook settings
+            const webhookConfig = config.alerts?.webhook || {};
+            document.getElementById('webhookUrl').value = webhookConfig.url || '';
+            // Don't load webhook secret for security
+        }
+    } catch (error) {
+        console.error('Error loading settings:', error);
+        alert('Error loading settings: ' + error.message);
+    }
+}
+
+document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    // Collect form data
+    const alertMethods = Array.from(document.getElementById('alertMethods').selectedOptions)
+                             .map(option => option.value);
+    
+    const recipients = document.getElementById('alertRecipients').value
+                         .split('\n')
+                         .map(email => email.trim())
+                         .filter(email => email);
+    
+    const config = {
+        detection_threshold: parseFloat(document.getElementById('detectionThreshold').value),
+        notification_methods: alertMethods,
+        alert_recipients: recipients,
+        alerts: {
+            email: {
+                smtp_server: document.getElementById('emailServer').value,
+                smtp_port: parseInt(document.getElementById('emailPort').value) || 587,
+                username: document.getElementById('emailUsername').value,
+                password: document.getElementById('emailPassword').value
+            },
+            webhook: {
+                url: document.getElementById('webhookUrl').value,
+                secret: document.getElementById('webhookSecret').value
+            }
+        }
+    };
+    
+    try {
+        const response = await fetch('/api/settings', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(config)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            alert('Settings saved successfully!');
+            // Clear password fields for security
+            document.getElementById('emailPassword').value = '';
+            document.getElementById('webhookSecret').value = '';
+        } else {
+            alert('Error saving settings: ' + data.error);
+        }
+    } catch (error) {
+        alert('Network error: ' + error.message);
+    }
+});
+
+async function testConnection() {
+    const emailServer = document.getElementById('emailServer').value;
+    const emailPort = document.getElementById('emailPort').value;
+    const webhookUrl = document.getElementById('webhookUrl').value;
+    
+    if (!emailServer && !webhookUrl) {
+        alert('Please configure at least one connection to test');
+        return;
+    }
+    
+    // Simple connectivity test (in real implementation, this would test actual connections)
+    let testResults = [];
+    
+    if (emailServer) {
+        testResults.push('Email SMTP: Connection test would be performed here');
+    }
+    
+    if (webhookUrl) {
+        testResults.push('Webhook: URL accessibility test would be performed here');
+    }
+    
+    alert('Connection Test Results:\n\n' + testResults.join('\n'));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Message Analysis - AI Phishing Detection{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-search"></i> Message Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="analysisForm">
+                    <div class="mb-3">
+                        <label for="content" class="form-label">Message Content *</label>
+                        <textarea class="form-control" id="content" rows="6" 
+                                  placeholder="Paste message content here..." required></textarea>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="sender" class="form-label">Sender</label>
+                            <input type="text" class="form-control" id="sender" 
+                                   placeholder="sender@example.com">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" 
+                                   placeholder="Email subject">
+                        </div>
+                        <div class="col-md-4">
+                            <label for="channel" class="form-label">Channel</label>
+                            <select class="form-select" id="channel">
+                                <option value="email">Email</option>
+                                <option value="sms">SMS</option>
+                                <option value="chat">Chat</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Analyze Message
+                        </button>
+                        <button type="button" class="btn btn-secondary ms-2" onclick="clearForm()">
+                            <i class="bi bi-x-circle"></i> Clear
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Analysis Result -->
+                <div id="analysisResult" class="mt-4" style="display: none;"></div>
+            </div>
+        </div>
+
+        <!-- Batch Analysis -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-files"></i> Batch Analysis
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Upload multiple messages for batch analysis</p>
+                <div class="mb-3">
+                    <label for="batchInput" class="form-label">Messages (JSON format)</label>
+                    <textarea class="form-control" id="batchInput" rows="6" 
+                              placeholder='[{"content": "message 1", "sender": "user1@example.com"}, {"content": "message 2", "sender": "user2@example.com"}]'></textarea>
+                </div>
+                <button type="button" class="btn btn-warning" onclick="analyzeBatch()">
+                    <i class="bi bi-files"></i> Analyze Batch
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <!-- Tips -->
+        <div class="card">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-lightbulb"></i> Analysis Tips
+                </h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> Include complete message content</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Provide sender information</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Select correct channel type</li>
+                    <li><i class="bi bi-check-circle text-success"></i> URLs will be automatically detected</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Sample Messages -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6 class="card-title mb-0">
+                    <i class="bi bi-file-text"></i> Sample Messages
+                </h6>
+            </div>
+            <div class="card-body">
+                <button class="btn btn-outline-primary btn-sm mb-2 w-100" onclick="loadSample('phishing')">
+                    Load Phishing Sample
+                </button>
+                <button class="btn btn-outline-success btn-sm w-100" onclick="loadSample('legitimate')">
+                    Load Legitimate Sample
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const samples = {
+    phishing: {
+        content: "URGENT! Your PayPal account will be suspended in 24 hours. Click here to verify: http://fake-paypal.tk/verify",
+        sender: "security@paypal-fake.com",
+        subject: "Account Suspension Warning",
+        channel: "email"
+    },
+    legitimate: {
+        content: "Hi John, please review the quarterly report attached. Let me know if you have questions.",
+        sender: "colleague@company.com", 
+        subject: "Q4 Report Review",
+        channel: "email"
+    }
+};
+
+function loadSample(type) {
+    const sample = samples[type];
+    document.getElementById('content').value = sample.content;
+    document.getElementById('sender').value = sample.sender;
+    document.getElementById('subject').value = sample.subject;
+    document.getElementById('channel').value = sample.channel;
+}
+
+function clearForm() {
+    document.getElementById('analysisForm').reset();
+    document.getElementById('analysisResult').style.display = 'none';
+}
+
+document.getElementById('analysisForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        content: document.getElementById('content').value.trim(),
+        sender: document.getElementById('sender').value.trim(),
+        subject: document.getElementById('subject').value.trim(),
+        channel: document.getElementById('channel').value
+    };
+    
+    if (!formData.content) {
+        alert('Please enter message content');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (data.success) {
+            displayResult(data.result);
+        } else {
+            alert('Error: ' + data.error);
+        }
+    } catch (error) {
+        alert('Network error: ' + error.message);
+    }
+});
+
+function displayResult(result) {
+    const resultDiv = document.getElementById('analysisResult');
+    const isPhishing = result.is_phishing;
+    
+    resultDiv.innerHTML = `
+        <div class="alert ${isPhishing ? 'alert-danger' : 'alert-success'}">
+            <h5><span class="badge ${isPhishing ? 'bg-danger' : 'bg-success'}">
+                ${isPhishing ? 'PHISHING DETECTED' : 'SAFE MESSAGE'}
+            </span></h5>
+            <hr>
+            <div class="row">
+                <div class="col-md-3"><strong>Risk Level:</strong> ${result.risk_level || 'N/A'}</div>
+                <div class="col-md-3"><strong>Confidence:</strong> ${((result.confidence || 0) * 100).toFixed(1)}%</div>
+                <div class="col-md-3"><strong>Risk Score:</strong> ${result.risk_score || 0}/100</div>
+                <div class="col-md-3"><strong>Channel:</strong> ${result.channel || 'Unknown'}</div>
+            </div>
+            ${result.threats_detected && result.threats_detected.length > 0 ? `
+                <hr><strong>Threats:</strong>
+                <ul>${result.threats_detected.map(t => `<li>${t}</li>`).join('')}</ul>
+            ` : ''}
+            ${result.urls && result.urls.length > 0 ? `
+                <hr><strong>URLs Found:</strong>
+                <ul>${result.urls.map(u => `<li><code>${u}</code></li>`).join('')}</ul>
+            ` : ''}
+        </div>
+    `;
+    
+    resultDiv.style.display = 'block';
+    resultDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+async function analyzeBatch() {
+    const input = document.getElementById('batchInput').value.trim();
+    if (!input) {
+        alert('Please enter batch data');
+        return;
+    }
+    
+    try {
+        const messages = JSON.parse(input);
+        const response = await fetch('/api/batch-analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages })
+        });
+        
+        const data = await response.json();
+        if (data.success) {
+            alert(`Batch analysis complete!\nTotal: ${data.summary.total_messages}\nPhishing: ${data.summary.phishing_detected}`);
+        }
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+</script>
+{% endblock %}
