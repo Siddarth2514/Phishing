@@ -27,12 +27,17 @@ try:
     detection_system = PhishingDetectionSystem()
 
     # Load the previously trained model
-    model_path = os.path.join(os.path.dirname(__file__), 'phishing_model.pkl')
+    model_path = os.path.join(
+        os.path.dirname(__file__),
+        'phishing_model.pkl'
+    )
+
     detection_system.load_trained_model(model_path)
 
     use_full_system = True
 
     logger.info("Full detection system loaded with trained model")
+
 except Exception as e:
     # Fallback to simple detector
     detection_system = SimplePhishingDetector()
