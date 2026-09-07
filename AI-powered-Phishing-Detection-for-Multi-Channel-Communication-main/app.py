@@ -23,26 +23,34 @@ logger = logging.getLogger(__name__)
 
 # Initialize detection systems
 try:
-    # Try to use the full system if available
     detection_system = PhishingDetectionSystem()
 
-    # Load the previously trained model
+    # Load the trained model
     model_path = os.path.join(
-        os.path.dirname(__file__),
+        os.path.dirname(os.path.abspath(__file__)),
         'phishing_model.pkl'
     )
 
+    logger.info(f"Loading trained model from: {model_path}")
+
     detection_system.load_trained_model(model_path)
+
+    # Verify that the model is actually trained
+    if not detection_system.model.is_trained:
+        raise RuntimeError("Model loaded but is_trained is False")
 
     use_full_system = True
 
-    logger.info("Full detection system loaded with trained model")
+    logger.info("========================================")
+    logger.info("FULL SYSTEM + TRAINED MODEL READY")
+    logger.info("Model trained: %s", detection_system.model.is_trained)
+    logger.info("========================================")
 
 except Exception as e:
-    # Fallback to simple detector
+    logger.exception("FAILED TO LOAD TRAINED MODEL")
+
     detection_system = SimplePhishingDetector()
     use_full_system = False
-    logger.info(f"Using simple detector as fallback: {e}")
 
 # Global variables for system state
 analysis_history = []
